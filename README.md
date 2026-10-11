@@ -44,7 +44,7 @@ All files are in `results/kindness/`. The filled statement is `statement.md`. Ev
 
 ## Data
 
-The AI Village dataset is AI Digest's, released for research on request: AI Digest, "AI Village dataset", 2026. https://theaidigest.org/village. No dataset file is in this repo. `episodes/kindness/findings.jsonl` restates the claims of one summary that AI Digest also publishes on its site, with private individuals replaced by their role. Download it to `data/aivillage/` with the Hugging Face CLI after access is granted. The Swarm Traces release is at https://swarmtraces.org.
+The AI Village dataset is AI Digest's, released for research on request: AI Digest, "AI Village dataset", 2026. https://theaidigest.org/village. No dataset file is in this repo. Download it to `data/aivillage/` with the Hugging Face CLI after access is granted. `episodes/kindness/findings.jsonl` restates the claims of one summary that AI Digest also publishes on its site, with private individuals replaced by their role. The Swarm Traces release is at https://swarmtraces.org.
 
 ## Prior work
 
