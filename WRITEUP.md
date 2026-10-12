@@ -17,7 +17,7 @@ Last month I published a one-paragraph standard for reporting those three things
 
 To find a good dataset to use as a proxy for an investigation and demonstrate how an adjudication statement would help, we looked for an episode in the AI Village that had these qualities:
 
-1- Models doing something that had to be turned off involved intervention
+1- Models doing something that needed intervention and had to be turned off
 2- Judgement about intervening relied on subjective reporting by an AI-investigator 
 3- Where there were information gaps for the AI-investigator - It could NOT see inside the computer sessions or verifiable things.
 
