@@ -190,27 +190,39 @@ def do_statement(ep_dir, ep, findings):
     jd = json.loads(jp.read_text(encoding="utf-8")) if jp.exists() else None
     c, n, s = ag["counts"], ag["n"], ep["statement"]
     devs = [llm.DEVELOPERS.get(m, m) for m in ep["coders"]]
+    short = [d.split(" (")[0] for d in devs]
+    # The fields follow version 0.2 of the standard. Facts that only a person can give
+    # (who filled it, records in reach, the audit) come from episode.json under "statement".
+    # When an episode does not record one, the statement says "not stated", which the
+    # standard allows and treats as a finding.
     if jd:
-        verified = (f"{len(jd['both_supported'])} of {jd['checked']} checked, both judges agreeing; "
-                    f"{len(jd['both_contradicted'])} contradicted, {len(jd['both_not_settled'])} not settled by this record, "
-                    f"{len(jd['flips'])} flipped when the judge was swapped")
+        judges = ", ".join(ep["judges"])
+        ruled = (f"{len(jd['both_supported'])} supported and {len(jd['both_contradicted'])} contradicted, "
+                 f"by {len(ep['judges'])} model judges ({judges}) agreeing")
     else:
-        verified = "not checked"
+        ruled = "not checked"
     hv = ag.get("human_vs_majority")
-    audit = (f"{n} sorted blind of {n}, {n - hv['agree']} differ from the panel" if hv else "none")
-    text = (
-        f"**Adjudication statement.** Findings with an independent record: {c['L']} of {n}. "
-        f"Findings verified against one: {verified}. "
-        f"Findings resting on model judgement: {c['M']}, plus {c['B']} mixed and {c['?']} unresolved. "
-        f"Model reader: {s['model_reader']}. "
+    human_sort = (f"{n} of {n}, {n - hv['agree']} differ from the panel" if hv else f"0 of {n}")
+    not_sure = "offered to every coder" if ep.get("offer_not_sure", True) else "offered to the human only"
+    blocks = [
+        f"**Adjudication statement.** Filled by: {s.get('filled_by', 'not stated')}.",
+        f"**1. What happened on the record.** Records in reach: {s.get('records_in_reach', 'not stated')}.",
+        f"**2. The records to the transcripts.** Findings with an independent record: {c['L']} of {n}. "
+        f"Ruled on against one: {ruled}. "
+        f"Resting on judgement: {c['M']}, plus {c['B']} mixed and {c['?']} unresolved. "
+        f"Transcripts found spoofed: {s.get('transcripts_spoofed', 'not checked')}.",
+        f"**3. The transcripts to the model reader.** Model reader: {s['model_reader']}. "
         f"Order of reading: {s['order_of_reading']}. "
-        f"Panel: {len(ep['coders'])} readers from {len(set(devs))} developers ({'; '.join(devs)}), majority rules, a not-sure is a vote. "
-        f"Human audit of model findings: {audit}. "
-        f"Confidence bands: {s.get('confidence_bands', 'none')}. "
-        f"Not-sure: {'offered to every coder' if ep.get('offer_not_sure', True) else 'offered to the human only'}. "
-        f"Load-bearing count per headline finding: {s.get('load_bearing', 'not stated')}. "
-        f"Re-runnable by an outside party: {s['rerunnable']}."
-    )
+        f"Panel: {len(ep['coders'])} readers from {len(set(short))} developers ({', '.join(short)}), "
+        f"used for sorting findings by type. Majority rules, and a not-sure is a vote.",
+        f"**4. The model reader to the humans.** Human sort of findings by type: {human_sort}. "
+        f"Audit of rulings: {s.get('audit_of_rulings', 'not stated')}.",
+        f"**5. The humans to the report.** Confidence: {s.get('confidence', s.get('confidence_bands', 'none'))}. "
+        f"Not-sure: {not_sure}. "
+        f"Load-bearing count per headline finding: {s.get('load_bearing', 'not stated')}.",
+        f"**6. The report to the reader.** Re-runnable by an outside party: {s['rerunnable']}.",
+    ]
+    text = "\n>\n> ".join(blocks)
     (res / "statement.md").write_text(f"# Adjudication statement: {ep['name']}\n\n> {text}\n", encoding="utf-8")
     facts = [f"# Facts: {ep['name']}", "", "Every number, with the file it came from. No prose for the write-up here.", "",
              "| Number | Value | Source |", "|---|---|---|",

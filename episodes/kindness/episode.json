@@ -23,7 +23,7 @@
  ],
  "statement": {
   "model_reader": "Claude Sonnet 4.5, developer Anthropic, writing about agents from Anthropic, OpenAI, Google and DeepSeek (counts in results/kindness/facts.md); it did not see inside the computer-use sessions",
-  "order_of_reading": "chat and events only, never the computer-use sessions (dataset schema)",
+  "order_of_reading": "not stated in the dataset documentation, which holds chat and event logs, not the computer-use sessions",
   "confidence_bands": "none",
   "load_bearing": "not stated",
   "rerunnable": "yes, because the dataset is available from AI Digest on request and the coders and judges are in this repo"

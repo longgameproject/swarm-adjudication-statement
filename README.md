@@ -1,17 +1,17 @@
 # swarm-adjudication-statement
 
-Fills the adjudication statement for one episode of agent activity. The statement is a one-page reporting standard for investigations where a model reads the evidence ([the standard](https://www.longgameproject.org/standards/adjudication-statement), The Long Game Project, 14 Sep 2026).
+Fills the adjudication statement for one episode of agent activity. The adjudication statement is a reporting standard for investigations where a model reads the evidence ([the standard](https://www.longgameproject.org/standards/adjudication-statement), The Long Game Project, version 0.2, October 2026).
 
 Given findings that a model reader wrote about what agents did, it:
 
-1. Sorts every finding three times, by three readers from three developers, on one test: could a record the agents did not write settle it? L yes, M no (belief, intent, motive), B both, ? not sure.
+1. Sorts every finding three times, by three sorters from three developers, on one test: could a record the agents did not write settle it? L yes, M no (belief, intent, motive), B both, ? not sure.
 2. Writes a blind sheet so a human can sort the same findings without seeing the models' labels, then scores agreement: raw agreement, Cohen's kappa and a bootstrap interval, plus the findings where the models agree and the human does not.
 3. Checks each L and B finding against the independent record with two judges from two developers, and counts the flips when the judge is swapped and the findings the record contradicts.
-4. Fills every field of the statement, and writes a facts sheet with every number and the file it came from.
+4. Fills the six blocks of the version 0.2 statement, and writes a facts sheet with every number and the file it came from. Fields only a person can give (who filled it, the records in reach, the audit of rulings) come from `episode.json`, and read "not stated" when it has none. The `statement.md` files in `results/` were written before the move to version 0.2 and carry the version 0.1 fields.
 
 ## Run
 
-Python 3, standard library only. The local readers need [Ollama](https://ollama.com) with `qwen3.5:4b` and `gemma4:latest`.
+Python 3, standard library only. The local sorters and judges need [Ollama](https://ollama.com) with `qwen3.5:4b` and `gemma4:latest`.
 
 ```bash
 python run.py episodes/hf-incident-dryrun all
@@ -19,15 +19,15 @@ python run.py episodes/hf-incident-dryrun all
 
 Stages one at a time: `sort`, `sheet`, `human` (reads the filled sheet back), `agree`, `judge`, `statement`, and for findings that state an email count, `counts` and `sends`. Results land in `results/<episode>/`. Raw model text and dataset copies stay in `data/`, which git ignores.
 
-## Readers
+## Sorters
 
-| Reader | Developer | Where it runs |
+| Sorter | Developer | Where it runs |
 |---|---|---|
 | Claude | Anthropic | a Claude Code subagent, answers saved to `labels/claude.json` |
 | qwen3.5:4b | Alibaba, open-weight | local Ollama |
 | gemma4:latest | Google, open-weight | local Ollama |
 
-Temperature 0 and a fixed seed, and every call is cached on disk, so a re-run reproduces the labels.
+The local sorters run at temperature 0 with a fixed seed, and every call is cached on disk, so a re-run reproduces their labels. Claude's labels are the saved answers in `labels/claude.json`.
 
 ## Episodes
 
@@ -48,4 +48,4 @@ The AI Village dataset is AI Digest's, released for research on request: AI Dige
 
 ## Prior work
 
-The adjudication statement standard (14 Sep 2026) and the blind sort of the 36 findings (18 Sep 2026), both by The Long Game Project. Built with Claude Code.
+The adjudication statement standard, version 0.1 (14 Sep 2026), and the blind sort of the 36 findings (18 Sep 2026), both by The Long Game Project. Built with Claude Code.
